@@ -45,17 +45,31 @@ $app->map(
 );
 
 $app->get('/logout', function ($request, $response, $args) {
-
     $controller = new \App\Controller\LoginController();
     $controller->logoutAction();
-
 });
 
+
+
+// Rotas produtos
 $app->get('/ws/produtos', function ($request, $response, $args) {
     $controller = new \App\Controller\ProdutoWsController();
     $controller->listarAction();
 });
-
-
-
+$app->post('/ws/produtos', function ($request, $response, $args) {
+    $controller = new \App\Controller\ProdutoWsController();
+    $controller->cadastrarAction();
+});
+$app->post('/ws/produtos/{id}', function ($request, $response, $args) {
+    $controller = new \App\Controller\ProdutoWsController();
+    $controller->editarAction($args['id']);
+});
+$app->delete('/ws/produtos/{id}', function ($request, $response, $args) {
+    $controller = new \App\Controller\ProdutoWsController();
+    $controller->excluirAction($args['id']);
+});
+$app->post('/ws/produtos/{id}/apagar', function ($request, $response, $args) {
+    $controller = new \App\Controller\ProdutoWsController();
+    $controller->excluirAction($args['id']);
+});
 
