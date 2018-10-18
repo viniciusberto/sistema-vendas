@@ -22,9 +22,9 @@ Mais temas em http://bootswatch.com/
 */
 define('TWITTER_BOOTSTRAP_TEMA', 'cosmo');
 
-define('BD_HOST', 'localhost');
+define('BD_HOST', '127.0.0.1');
 define('BD_USUARIO', 'root');
-define('BD_SENHA', '001001');
+define('BD_SENHA', '@#1234');
 define('BD_NOME', 'vendas');
 
 define('CATEGORIA_INATIVO', '0');

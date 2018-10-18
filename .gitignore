@@ -27,6 +27,7 @@ nbdist/
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/workspace.xml
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
