@@ -1,127 +1,128 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: alisson
+ * Date: 16/10/18
+ * Time: 21:52
+ */
 
 namespace App\Controller;
 
+
 use App\Conexao;
-use App\Dao\ProdutoDao;
 use App\Vo\Produto;
-use Exception;
+use App\Dao\ProdutoDao;
 use PDO;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
-class ProdutoWsController
+class ProdutoWsController extends WsController
 {
-    public function listarAction()
-    {
-        $idcategoria = 0;
-        $q = '';
-        if (isset($_GET['q'])) {
-            $q = trim($_GET['q']);
-        }
-        if (isset($_GET['idcategoria'])) {
-            $idcategoria = (int)$_GET['idcategoria'];
-        }
 
-        // Produtos
-        $con = Conexao::getConexao();
-        $sql = "Select produto.idproduto, produto, produto.status, categoria from produto inner join categoria on produto.idcategoria = categoria.idcategoria";
-        $array = array();
-        if ($q != '') {
-            $array[] = "(produto like '%$q%')";
-        }
-        if ($idcategoria > 0) {
-            $array[] = "(categoria.idcategoria = $idcategoria)";
-        }
-        if ($array) {
-            $sql .= " Where " . join(' or ', $array);
-        }
-        $produtos = $con->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+  public function listarAction(Request $request, Response $response, $args)
+  {
 
-        header("Content-Type: application/json; charset=utf-8");
-        echo json_encode($produtos);
+    $idcategoria = 0;
+
+    $q = '';
+    if (isset($_GET['q'])) {
+      $q = trim($_GET['q']);
+    }
+    if (isset($_GET['idcategoria'])) {
+      $idcategoria = (int)$_GET['idcategoria'];
     }
 
-    public function cadastrarAction()
-    {
-        $msg = array();
-        $descricao = '';
-        $preco = '';
-        $idcategoria = 0;
+    $con = Conexao::getConexao();
 
-
-        // Pegar informações
-        $descricao = $_POST['descricao'];
-        $preco = $_POST['preco'];
-        $idcategoria = (int)$_POST['idcategoria'];
-
-        $produto = new Produto();
-        $produto->setProduto($descricao);
-        $produto->setPreco($preco);
-        $produto->setIdcategoria($idcategoria);
-
-        $produtoDao = new ProdutoDao();
-        header("Content-Type: application/json; charset=utf-8");
-
-        try {
-            $produtoDao->create($produto);
-
-
-            echo json_encode(array(
-                'idproduto' => $produto->getIdproduto(),
-                'descricao' => $produto->getProduto(),
-                'preco' => $produto->getPreco(),
-                'idcategoria' => $produto->getIdcategoria()
-            ));
-
-        } catch (Exception $e) {
-            echo json_encode(array(
-                'error' => $e->getMessage()
-            ));
-        }
+    // Produtos
+    $sql
+      = "Select produto.idproduto, produto, produto.status, categoria from produto inner join categoria on produto.idcategoria = categoria.idcategoria";
+    $array = array();
+    if ($q != '') {
+      $array[] = "(produto like '%$q%')";
     }
-
-    public function editarAction($idproduto)
-    {
-        $msg = array();
-        $descricao = '';
-        $preco = '';
-        $idcategoria = 0;
-
-        // Pegar informações
-        $descricao = $_POST['descricao'];
-        $preco = $_POST['preco'];
-        $idcategoria = (int)$_POST['idcategoria'];
-
-        $produto = new Produto();
-        $produto->setIdproduto($idproduto);
-        $produto->setProduto($descricao);
-        $produto->setPreco($preco);
-        $produto->setIdcategoria($idcategoria);
-
-        $produtoDao = new ProdutoDao();
-
-//        header("Content-Type: application/json; charset=utf-8");
-        header('Content-Type: application/json');
-        try {
-
-            $produtoDao->update($produto);
-
-            echo json_encode(array(
-                'idproduto' => $produto->getIdproduto(),
-                'descricao' => $produto->getProduto(),
-                'preco' => $produto->getPreco(),
-                'idcategoria' => $produto->getIdcategoria()
-            ));
-
-        } catch (Exception $e) {
-            echo json_encode(array(
-                'error' => $e->getMessage()
-            ));
-        }
+    if ($idcategoria > 0) {
+      $array[] = "(categoria.idcategoria = $idcategoria)";
     }
-
-    public function excluirAction ($idproduto) {
-        $produtoDao = new ProdutoDao();
-        $produtoDao->deleteById($idproduto);
+    if ($array) {
+      $sql .= " Where " . join(' or ', $array);
     }
+    $produtos = $con->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    return $this->response($response, $produtos);
+  }
+
+  public function cadastrarAction(Request $request, Response $response, $args)
+  {
+
+    $msg = array();
+
+    // Pegar informações
+    $descricao = $_POST['descricao'];
+    $preco = $_POST['preco'];
+    $idcategoria = (int)$_POST['idcategoria'];
+
+    $produto = new Produto();
+    $produto->setProduto($descricao);
+    $produto->setPreco($preco);
+    $produto->setIdcategoria($idcategoria);
+
+    $produtoDao = new ProdutoDao();
+
+    $produtoDao->create($produto);
+
+    return $this->response($response, array(
+      'idproduto' => $produto->getIdproduto(),
+      'descricao' => $produto->getProduto(),
+      'preco' => $produto->getPreco(),
+      'idcategoria' => $produto->getIdcategoria()
+    ));
+
+  }
+
+  public function editarAction(Request $request, Response $response, $args)
+  {
+
+    $idproduto = $args['id'];
+
+    // Pegar informações
+    $descricao = $_POST['descricao'];
+    $preco = $_POST['preco'];
+    $idcategoria = (int)$_POST['idcategoria'];
+
+    $produto = new Produto();
+    $produto->setIdproduto($idproduto);
+    $produto->setProduto($descricao);
+    $produto->setPreco($preco);
+    $produto->setIdcategoria($idcategoria);
+
+    $produtoDao = new ProdutoDao();
+
+    $produtoDao->update($produto);
+
+    return $this->response($response, array(
+      'idproduto' => $produto->getIdproduto(),
+      'descricao' => $produto->getProduto(),
+      'preco' => $produto->getPreco(),
+      'idcategoria' => $produto->getIdcategoria()
+    ));
+
+  }
+
+  public function excluirAction (Request $request, Response $response, $args)
+  {
+
+    $idproduto = $args['id'];
+
+    $produtoDao = new ProdutoDao();
+    $produtoDao->deleteById($idproduto);
+
+    return $this->response($response, []);
+
+  }
 
 }
+
+
+
+

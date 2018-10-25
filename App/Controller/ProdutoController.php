@@ -171,6 +171,8 @@ Where (idproduto = $idproduto)";
     $produtoDao = new ProdutoDao();
     $produtoDao->deleteById($idproduto);
 
+    javascriptAlertFim('Produto apagado', 'produtos');
+
   }
 
 }

@@ -14,6 +14,8 @@ define('VIEWS', DIRETORIO . '/views');
 define('CACHE', DIRETORIO . '/cache');
 define('CACHE_VIEWS', CACHE . '/views');
 
+define('JWT_SECRET', "3lBaVl40IVETHqXwCqD9Wigrx0R0pdAY6dVaNrRPHLM=");
+
 /*
 Temas: default, bootstrap
 
@@ -22,7 +24,7 @@ Mais temas em http://bootswatch.com/
 */
 define('TWITTER_BOOTSTRAP_TEMA', 'cosmo');
 
-define('BD_HOST', '127.0.0.1');
+define('BD_HOST', '127.0.0.1:3380');
 define('BD_USUARIO', 'root');
 define('BD_SENHA', '@#1234');
 define('BD_NOME', 'vendas');
